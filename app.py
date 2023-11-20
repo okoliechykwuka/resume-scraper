@@ -55,8 +55,6 @@ def request_files(rfp_docs) -> None:
     if rfp_docs:
         rfp_docs_uploaded = True
         with tempfile.NamedTemporaryFile(delete=False) as tpfile:
-            print('-------------------------------------------------------------------')
-            print(tpfile.name)
             tpfile.write(rfp_docs.getvalue())
             st.session_state['rfpfile'] = tpfile.name
 
@@ -103,7 +101,6 @@ def qa(parent_folder, job_titles):
         docs = reader.load_data()
         chatbot = ChatBotManager(rerank)
         query_engine = chatbot.get_query_engine(docs)
-        print("TTTTTTTTTTTTTTTTTTTTTTTTTTT")
         print(job_titles[index])
         qa_dict[job_titles[index]] = query_engine
     json_resume_qualification = st.session_state.get('json_resume_qualification')
@@ -142,7 +139,7 @@ def generate_resume_structure(role_dict):
                 with st.spinner("Tailoring the resume"):
                     text = tailor_resume(role_dict['Project Software Manager'].response)
 
-            json_resume = generate_json_resume(text)
+            json_resume = generate_json_resume(role_dict['Project Software Manager'].response)
             latex_resume = generate_latex(chosen_option, json_resume, section_ordering)
             resume_bytes = render_latex(template_commands[chosen_option], latex_resume)
             
@@ -198,7 +195,6 @@ def main():
     resume_qualification = request_files(rfp_docs)
     job_titles, parent_folder = clean_text(resume_qualification.response)
     role_dict = qa(parent_folder, job_titles)
-    print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
     generate_resume_structure(role_dict)
     
 if __name__ == "__main__":
